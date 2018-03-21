@@ -1,0 +1,79 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  SharedSecret:
+    Default: SOOPASEKRET
+    Description: Shared Secret, aka External ID
+    Type: String
+    NoEcho: 'true'
+Resources:
+  DatadogAWSIntegrationRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Condition:
+            StringEquals:
+              sts:ExternalId:
+                Ref: SharedSecret
+          Principal:
+            AWS: arn:aws:iam::464622532012:root
+      Path: "/"
+  DatadogAWSIntegrationPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Action:
+          - autoscaling:Describe*
+          - cloudtrail:DescribeTrails
+          - cloudtrail:GetTrailStatus
+          - cloudwatch:Describe*
+          - cloudwatch:Get*
+          - cloudwatch:List*
+          - ec2:Describe*
+          - ec2:Get*
+          - ecs:Describe*
+          - ecs:List*
+          - elasticache:Describe*
+          - elasticache:List*
+          - elasticloadbalancing:Describe*
+          - elasticmapreduce:List*
+          - iam:Get*
+          - iam:List*
+          - kinesis:Get*
+          - kinesis:List*
+          - kinesis:Describe*
+          - logs:Get*
+          - logs:Describe*
+          - logs:TestMetricFilter
+          - rds:Describe*
+          - rds:List*
+          - route53:List*
+          - ses:Get*
+          - ses:List*
+          - sns:List*
+          - sns:Publish
+          - sqs:GetQueueAttributes
+          - sqs:ListQueues
+          - sqs:ReceiveMessage
+          Effect: Allow
+          Resource: "*"
+      Path: "/"
+      Roles:
+      - Ref: DatadogAWSIntegrationRole
+Outputs:
+  RoleName:
+    Description: The IAM Role to share with Datadog
+    Value:
+      Fn::GetAtt:
+      - DatadogAWSIntegrationRole
+      - Arn
+  SharedSecret:
+    Description: The Shared Secret aka External ID
+    Value:
+      Ref: SharedSecret

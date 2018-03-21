@@ -1,0 +1,6 @@
+pip install requests
+pip install boto3
+pip install datadog
+
+sudo -H pip install awscli --upgrade --ignore-installed six
+sudo -H pip install boto3 --upgrade --ignore-installed six
